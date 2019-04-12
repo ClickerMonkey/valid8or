@@ -74,6 +74,20 @@ fail = [
 - `geo()`: ValidatorObject (type `GeoInput -> GeoOutput`)
 - `any()`: ValidatorAny (type `any`)
 
+### Index
+
+#### Validators
+[`required`](required) [`optional`](optional) [`is`](is) [`oneOf`](oneOf) [`notOneOf`](notOneOf) [`equals`](equals) [`greaterThan`](greaterThan) [`greaterThanEqual`](greaterThanEqual) [`between`](between) [`min`](min) [`max`](max) [`fail`](fail) [`or`](or) [`validate`](validate) [`eval`](eval) [`type`](type) [`minLength`](minLength) [`maxLength`](maxLength) [`every`](every) [`some`](some) [`unique`](unique) [`isWeekday`](isWeekday) [`isDayOfMonth`](isDayOfMonth) [`isMonth`](isMonth) [`getTime`](getTime) [`isPositive`](isPositive) [`isNegative`](isNegative) [`props`](props) [`instanceOf`](instanceOf) [`wrap`](wrap) [`insensitive`](insensitive) [`exists`](exists) [`isLower`](isLower) [`isUpper`](isUpper) [`like`](like) [`unlike`](unlike) [`minLength`](minLength) [`maxLength`](maxLength) [`colorHex`](colorHex) [`colorShortHex`](colorShortHex) [`colorRGB`](colorRGB) [`colorRGBA`](colorRGBA) [`color`](color) [`linkless`](linkless) [`uuid`](uuid) [`ipv4`](ipv4) [`ipv6`](ipv6) [`ip`](ip) [`isbn`](isbn) [`phoneUS`](phoneUS) [`zipUS`](zipUS) [`alphaNumeric`](alphaNumeric) [`alpha`](alpha) [`token`](token) [`hex`](hex) [`base64`](base64) [`http`](http) [`https`](https) [`url`](url) [`email`](email) [`creditCard`](creditCard)
+
+#### Transformers
+[`transform`](transform) [`json`](json) [`nullify`](nullify) [`remove`](remove) [`set`](set) [`reverse`](reverse) [`filter`](filter) [`sort`](sort) [`map`](map) [`removeDuplicates`](removeDuplicates) [`endOfDay`](endOfDay) [`startOfDay`](startOfDay) [`endOfWeek`](endOfWeek) [`startOfWeek`](startOfWeek) [`endOfMonth`](endOfMonth) [`startOfMonth`](startOfMonth) [`endOfYear`](endOfYear) [`startOfYear`](startOfYear) [`floor`](floor) [`abs`](abs) [`neg`](neg) [`ceil`](ceil) [`round`](round) [`replace`](replace) [`truncate`](truncate) [`trim`](trim) [`ltrim`](ltrim) [`rtrim`](rtrim) [`lower`](lower) [`upper`](upper) [`strip`](strip) [`encode`](encode) [`encodeComponent`](encodeComponent) [`decode`](decode) [`decodeComponent`](decodeComponent) [`normalizeEmail`](normalizeEmail)
+
+#### Modifiers
+[`message`](message) [`withComparator`](withComparator) [`reverseComparator`](reverseComparator) [`withTruthy`](withTruthy) [`withFalsy`](withFalsy) 
+
+#### Validation
+[`run`](run) [`runAsPromise`](runAsPromise) [`runAsTuple`](runAsTuple) 
+
 Every validator has the following methods:
 
 - `required(defaults?)`: Evaluates the value and requires a valid one.
