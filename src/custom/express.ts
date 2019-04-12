@@ -2,11 +2,11 @@
 import { obj, ValidatorMap } from '../validators/Object';
 import { ResultFor } from '../types';
 
-export function getRouteHandler<Request, Response, K extends keyof Request> (source: K, required: boolean = true)
+export function getRouteHandler<Request, Response> (source: keyof Request, onFailure: (result: ResultFor<object>, request: Request, response: Response, next: () => void) => void)
 {
-  return function<T extends object = any> (validators: ValidatorMap<T>, onFailure: (result: ResultFor<T>, request: Request, response: Response, next: () => void) => void)
+  return function<T extends object = any> (validators: ValidatorMap<T>)
   {
-    const validator = obj<T>().json().eval(required).props(validators);
+    const validator = obj<T>().json().required().props(validators);
 
     return async (request: Request, response: Response, next: () => void) =>
     {
