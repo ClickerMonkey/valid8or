@@ -13,13 +13,15 @@ A validator and transformer in TypeScript/JS for simple and complex data types.
 
 ```typescript
 const arrayValidator = arr()
-  .required(() => [])
-  .maxLength(4)
-  .type(obj().required().props({
-    id: str().required().trim().alpha(),
-    age: int().optional().greaterThan(0),
-    admin: bool().required(false)
-  }))
+  .required(() => [])                       // an array is required, but if undefined is given get a default value of []
+  .maxLength(4)                             // the array cannot contain any more than 4 elements
+  .type(                                    // the type of the elements in the array
+    obj().required().props({                // must be non-null non-undefined objects
+      id: str().required().trim().alpha(),  // the id is required, it will be trimmed, and tested for alpha characters only
+      age: int().optional().greaterThan(0), // the age is optional, so if it doesn't look like an int, ignore greaterThan
+      admin: bool().required(false)         // a valid admin value is expected (true/y/yes/1/false/n/no/0), but if it's missing from the object then set admin to false
+    }
+  ))
 ;
 
 const validValue = [
