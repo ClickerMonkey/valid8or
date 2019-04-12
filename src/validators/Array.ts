@@ -160,9 +160,19 @@ export class ValidatorArray<T> extends Validator<T[]>
     return this.transform(value => value.filter(filter));
   }
 
-  public sort (sorter: Comparator<T> | undefined = this.getTypeComparator()): this
+  public sort (sorter?: Comparator<T>): this
   {
-    return this.transform(value => value.slice().sort(sorter));
+    type V = this;
+
+    return this.transform(function(this: V, value) 
+    {
+      if (!sorter)
+      {
+        sorter = this.getTypeComparator();
+      }
+
+      return value.slice().sort(sorter)
+    });
   }
 
   public map<M> (mapper: (item: T) => M): ValidatorArray<M>
@@ -193,7 +203,7 @@ export class ValidatorArray<T> extends Validator<T[]>
       }
 
       return true;
-      
+
     }).message('unique');
   }
 

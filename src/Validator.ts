@@ -56,7 +56,7 @@ export abstract class Validator<T>
     return new (<any>this.constructor)(check, this);
   }
 
-  public transform<R = T, V = this> (transformer: (value: T) => R | Promise<R>): V
+  public transform<R, V extends Validator<R>> (transformer: (value: T) => R | Promise<R>): V
   {
     return this.validate(async function (this: V, value, next, done, fail) 
     {

@@ -9,5 +9,5 @@ export declare class ValidatorObject<T extends object> extends Validator<T> {
     protected getComparator(a: T, b: T): number;
     props(props: ValidatorMap<T>): this;
     instanceOf(type: new (...args: any[]) => T): this;
-    wrap(type: new (value: T) => T): this;
+    wrap<O extends object = T>(type: new (value: T) => O): ValidatorObject<O>;
 }

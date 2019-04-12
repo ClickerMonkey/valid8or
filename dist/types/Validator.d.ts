@@ -13,7 +13,7 @@ export declare abstract class Validator<T> {
     withComparator(comparator: Comparator<T>): this;
     reverseComparator(): this;
     validate(check: Check<T>): this;
-    transform<R = T, V = this>(transformer: (value: T) => R | Promise<R>): V;
+    transform<R, V extends Validator<R>>(transformer: (value: T) => R | Promise<R>): V;
     eval(required: Value<boolean>, defaults?: Value<T>): this;
     required(defaults?: Value<T>): this;
     optional(defaults?: Value<T>): this;

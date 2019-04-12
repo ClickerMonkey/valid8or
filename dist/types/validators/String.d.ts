@@ -22,6 +22,7 @@ export declare class ValidatorString extends Validator<string> {
     uuid(): this;
     ipv4(): this;
     ipv6(): this;
+    ip(): this;
     isbn(): this;
     phoneUS(): this;
     zipUS(): this;

@@ -103,7 +103,7 @@ export class ValidatorObject<T extends object> extends Validator<T>
     return this.is(value => value instanceof type).message('instanceOf');
   }
 
-  public wrap (type: new (value: T) => T): this
+  public wrap<O extends object = T> (type: new (value: T) => O): ValidatorObject<O>
   {
     return this.transform(value => new type(value));
   }

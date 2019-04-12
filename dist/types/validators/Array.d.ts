@@ -15,7 +15,7 @@ export declare class ValidatorArray<T> extends Validator<T[]> {
     some(some: (item: T, index: number, all: T[]) => boolean): this;
     reverse(): this;
     filter(filter: (item: T, index: number, all: T[]) => boolean): this;
-    sort(sorter?: Comparator<T> | undefined): this;
+    sort(sorter?: Comparator<T>): this;
     map<M>(mapper: (item: T) => M): ValidatorArray<M>;
     unique(comparator?: Comparator<T>): this;
     removeDuplicates(comparator?: Comparator<T>): this;
