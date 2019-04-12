@@ -1,0 +1,39 @@
+{
+  "name": "valid8or",
+  "version": "0.0.1",
+  "author": "Philip Diffenderfer",
+  "description": "A validator and transformer in TypeScript/JS for simple and complex data types",
+  "license": "MIT",
+  "main": "dist/valid8or.js",
+  "typings": "dist/types/index.d.ts",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production",
+    "test": "mocha -r ts-node/register tests/**/*.ts"
+  },
+  "keywords": [
+    "validate",
+    "validator",
+    "transform",
+    "transformer"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.7.1",
+    "@types/webpack": "^4.4.10",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "cross-env": "^3.0.0",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
+    "ts-loader": "^4.0.0",
+    "typings": "^2.1.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.4000"
+  }
+}
