@@ -1,8 +1,8 @@
 import { Value } from '../types';
 import { ValidatorObject } from '../validators/Object';
 export declare type GeoInput = {
-    lat: number;
-    lng: number;
+    latitude: number;
+    longitude: number;
 };
 export declare type GeoOutput = {
     type: 'Point';

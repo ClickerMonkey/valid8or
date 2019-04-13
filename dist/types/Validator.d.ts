@@ -34,6 +34,10 @@ export declare abstract class Validator<T> {
     nullify(): this;
     remove(): this;
     set(newValue: Value<T>): this;
+    encode(): this;
+    encodeComponent(): this;
+    decode(): this;
+    decodeComponent(): this;
     run(value: any, next: Next<T>, done: Done<T>, fail: Fail<T>): Promise<void>;
     runAsTuple(value: any): Promise<Tuple<T>>;
     runAsPromise(value: any): Promise<T>;

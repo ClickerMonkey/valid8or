@@ -44,9 +44,5 @@ export declare class ValidatorString extends Validator<string> {
     lower(): this;
     upper(): this;
     strip(pattern: RegExp): this;
-    encode(): this;
-    encodeComponent(): this;
-    decode(): this;
-    decodeComponent(): this;
     normalizeEmail(): this;
 }

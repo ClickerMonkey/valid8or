@@ -18,7 +18,7 @@ describe('Array', () =>
 
     const b = {
       interests: 'Woodworking',
-      search_location: '{"lat":1, "lng":2}'
+      search_location: '{"latitude":1, "longitude":2}'
     };
 
     expect(await a.runAsTuple(b)).to.deep.equal([ 

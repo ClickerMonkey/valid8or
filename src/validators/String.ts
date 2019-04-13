@@ -246,26 +246,6 @@ export class ValidatorString extends Validator<string>
     return this.transform(value => value.replace(pattern, ''));
   }
 
-  public encode (): this
-  {
-    return this.transform(value => encodeURI(value));
-  }
-
-  public encodeComponent (): this
-  {
-    return this.transform(value => encodeURIComponent(value));
-  }
-
-  public decode (): this
-  {
-    return this.transform(value => decodeURI(value));
-  }
-
-  public decodeComponent (): this
-  {
-    return this.transform(value => decodeURIComponent(value));
-  }
-
   public normalizeEmail (): this
   {
     const PLUS_ONLY = /\+.*$/;

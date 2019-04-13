@@ -12,7 +12,7 @@ export function arr<T = any> (): ValidatorArray<T>
 export class ValidatorArray<T> extends Validator<T[]>
 {
 
-  private typeValidator: Validator<T>;
+  private typeValidator?: Validator<T>;
 
   protected parse (value: any): any
   {
@@ -78,11 +78,21 @@ export class ValidatorArray<T> extends Validator<T[]>
 
   public type (type: Validator<T>, removeAndIgnoreInvalid: boolean = false): this
   {
+    return this.types([type], false, removeAndIgnoreInvalid);
+  }
+
+  public types (types: Validator<T>[], requireDivisibleAmount: boolean = true, removeAndIgnoreInvalid: boolean = false): this
+  {
     type V = this;
 
     return this.validate(async function (this: V, value, next, done, fail) 
     {
-      this.typeValidator = type;
+      this.typeValidator = types.length === 1 ? types[0] : undefined;
+
+      if (requireDivisibleAmount && value.length % types.length !== 0)
+      {
+        return fail(this.getMessage(value));
+      }
 
       const result: any[] = [];
       const newValue: any[] = value.slice();
@@ -91,7 +101,7 @@ export class ValidatorArray<T> extends Validator<T[]>
 
       for (let i = 0; i < value.length; i++) 
       {
-        const [pass, updatedValue, failResult] = await type.runAsTuple(value[i]);
+        const [pass, updatedValue, failResult] = await types[i % types.length].runAsTuple(value[i]);
 
         if (pass) 
         {

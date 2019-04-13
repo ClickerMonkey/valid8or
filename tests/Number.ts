@@ -89,21 +89,21 @@ describe('valid8', () =>
     );
   
     expect(await c.runAsTuple({})).to.deep.equal(
-      [ false, undefined, { lat: 'Latitude is required', lng: 'Longitude is required' } ]
+      [ false, undefined, { latitude: 'Latitude is required', longitude: 'Longitude is required' } ]
     );
   
     expect(await c.runAsTuple({
-      lat: 45,
-      lng: 85
+      latitude: 45,
+      longitude: 85
     })).to.deep.equal(
       [ true, { type: 'Point', coordinates: [ 85, 45 ] }, undefined ]
     );
   
     expect(await c.runAsTuple({
-      lat: 45,
-      lng: -185
+      latitude: 45,
+      longitude: -185
     })).to.deep.equal(
-      [ false, undefined, { lng: 'Longitude must be between -180 and 180 degrees: -185' } ]
+      [ false, undefined, { longitude: 'Longitude must be between -180 and 180 degrees: -185' } ]
     );
   });
 

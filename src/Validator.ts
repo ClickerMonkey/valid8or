@@ -247,6 +247,26 @@ export abstract class Validator<T>
     return this.transform(value => resolve(newValue));
   }
 
+  public encode (): this
+  {
+    return this.transform(value => isString(value) ? encodeURI(value) : value);
+  }
+
+  public encodeComponent (): this
+  {
+    return this.transform(value => isString(value) ? encodeURIComponent(value) : value);
+  }
+
+  public decode (): this
+  {
+    return this.transform(value => isString(value) ? decodeURI(value) : value);
+  }
+
+  public decodeComponent (): this
+  {
+    return this.transform(value => isString(value) ? decodeURIComponent(value) : value);
+  }
+
   public async run (value: any, next: Next<T>, done: Done<T>, fail: Fail<T>): Promise<void>
   {
     if (this.parent) 

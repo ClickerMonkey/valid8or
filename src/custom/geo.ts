@@ -5,8 +5,8 @@ import { float } from '../validators/Number';
 
 
 export type GeoInput = {
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
 };
 
 export type GeoOutput = {
@@ -16,15 +16,15 @@ export type GeoOutput = {
 
 export function geo(required: Value<boolean>): ValidatorObject<GeoOutput>
 {
-  return obj<GeoInput>().json().eval(required).props({
-    lat: float()
+  return obj<GeoInput>().decodeComponent().json().eval(required).props({
+    latitude: float()
       .required().message('Latitude is required')
       .between(-90, 90).message(v => `Latitude must be between -90 and 90 degrees: ${v}`),
-    lng: float()
+    longitude: float()
       .required().message('Longitude is required')
       .between(-180, 180).message(v => `Longitude must be between -180 and 180 degrees: ${v}`)
-  }).transform(({lat, lng}) => ({
+  }).transform(({latitude, longitude}) => ({
     type: 'Point',
-    coordinates: [lng, lat]
+    coordinates: [longitude, latitude]
   }));
 }

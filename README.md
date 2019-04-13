@@ -113,6 +113,10 @@ Every validator has the following methods:
 - `nullify()`
 - `remove()`
 - `set(newValue)`
+- `encode()`
+- `encodeComponent()`
+- `decode()`
+- `decodeComponent()`
 - `validate(check)`: A custom validation check.
 - `eval(required, defaults?)`: Evaluates the value by parsing and checking it.
 - `message(string)`: Follows a validation and if the validation fails this will be the message returned in the failure value.
@@ -209,10 +213,6 @@ Every validator has the following methods:
 - `lower()`
 - `upper()`
 - `strip(regex)`
-- `encode()`
-- `encodeComponent()`
-- `decode()`
-- `decodeComponent()`
 - `normalizeEmail()`
 
 ## LICENSE
