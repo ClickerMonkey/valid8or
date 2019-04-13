@@ -77,7 +77,7 @@ describe('valid8', () =>
       [ false,
         undefined,
         [ { id: 'required', admin: 'required' },
-          { age: 'greaterThan' },
+          { age: 'greaterThan', admin: 'required' },
           'required',
           { id: 'uuid', admin: 'required' } ] ]
     );

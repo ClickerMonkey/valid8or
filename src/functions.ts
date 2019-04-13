@@ -25,7 +25,7 @@ export function isString (x: any): x is string
 export function isEmpty (x: any): boolean
 {
   return isString(x) 
-    ? x.trim().length > 0 
+    ? x.trim().length === 0 
     : (x !== undefined && x !== null);
 }
 
