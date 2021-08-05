@@ -1,5 +1,5 @@
 
-import { Check, GetMessage, Comparator, Value, Next, Done, Fail, Tuple, Result, ResultFor } from './types';
+import { Check, GetMessage, Comparator, Value, Next, Done, Fail, Tuple, ResultFor } from './types';
 import { isGetMessage, resolve, isEmpty, isString } from './functions';
 
 

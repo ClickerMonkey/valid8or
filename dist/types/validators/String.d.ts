@@ -1,9 +1,9 @@
 import { Validator } from '../Validator';
 import { Value } from '../types';
-export declare function str(): ValidatorString;
-export declare class ValidatorString extends Validator<string> {
+export declare function str<S extends string = string>(): ValidatorString<S>;
+export declare class ValidatorString<S extends string = string> extends Validator<S> {
     protected parse(value: any): any;
-    protected isValid(parsed: any, value: any): parsed is string;
+    protected isValid(parsed: any, value: any): parsed is S;
     protected getComparator(a: string, b: string): number;
     insensitive(): this;
     exists(): this;

@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { int, float, obj, arr, str, bool, geo, any } from '../src';
+import { int, obj, arr, str, bool, geo, any } from '../src';
 
 
 

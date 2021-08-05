@@ -83,9 +83,7 @@ export class ValidatorDate extends Validator<Date>
   {
     return this.transform(value => 
     {
-      value.setDate(1);
-      value.setMonth(value.getMonth() + 1);
-      value.setDate(0);
+      value.setMonth(value.getMonth() + 1, 0);
       return value;
     });
   }
@@ -103,9 +101,7 @@ export class ValidatorDate extends Validator<Date>
   {
     return this.transform(value => 
     {
-      value.setDate(1);
-      value.setMonth(12);
-      value.setDate(0);
+      value.setMonth(12, 0);
       return value;
     });
   }
@@ -114,8 +110,7 @@ export class ValidatorDate extends Validator<Date>
   {
     return this.transform(value => 
     {
-      value.setDate(1);
-      value.setMonth(0);
+      value.setMonth(0, 1);
       return value;
     });
   }

@@ -4,12 +4,12 @@ import { Validator } from '../Validator';
 import { Value } from '../types';
 
 
-export function str(): ValidatorString
+export function str<S extends string = string>(): ValidatorString<S>
 {
-  return new ValidatorString(async (value, next) => next(value));
+  return new ValidatorString<S>(async (value, next) => next(value));
 }
 
-export class ValidatorString extends Validator<string>
+export class ValidatorString<S extends string = string> extends Validator<S>
 {
 
   protected parse (value: any): any
@@ -17,7 +17,7 @@ export class ValidatorString extends Validator<string>
     return value === undefined || value === null ? value : (value + '');
   }
 
-  protected isValid (parsed: any, value: any): parsed is string
+  protected isValid (parsed: any, value: any): parsed is S
   {
     return isString(parsed);
   }

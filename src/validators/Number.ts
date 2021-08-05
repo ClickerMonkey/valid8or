@@ -3,17 +3,17 @@ import { Validator } from '../Validator'
 import { trimIfString } from '../functions';
 
 
-export function int(): ValidatorNumber
+export function int<N extends number = number>(): ValidatorNumber<N>
 {
-  return new ValidatorNumber(async (value, next) => next(value)).withParser(parseInt);
+  return new ValidatorNumber<N>(async (value, next) => next(value)).withParser(parseInt);
 }
 
-export function float(): ValidatorNumber
+export function float<N extends number = number>(): ValidatorNumber<N>
 {
-  return new ValidatorNumber(async (value, next) => next(value)).withParser(parseFloat);
+  return new ValidatorNumber<N>(async (value, next) => next(value)).withParser(parseFloat);
 }
 
-export class ValidatorNumber extends Validator<number>
+export class ValidatorNumber<N extends number = number> extends Validator<N>
 {
   
   public parser: (value: any) => number = parseFloat;
@@ -23,7 +23,7 @@ export class ValidatorNumber extends Validator<number>
     return this.parser(trimIfString(value));
   }
 
-  protected isValid (parsed: any, value: any): parsed is number
+  protected isValid (parsed: any, value: any): parsed is N
   {
     return isFinite(parsed);
   }
