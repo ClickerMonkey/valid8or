@@ -9,7 +9,7 @@ export type ValidatorMap<T> =
   [P in keyof T]?: Validator<T[P]> 
 };
 
-export function obj<T extends object = any> (): ValidatorObject<T>
+export function obj<T extends object = {}> (): ValidatorObject<T>
 {
   return new ValidatorObject<T>(async (value, next) => next(value));
 }
@@ -51,11 +51,11 @@ export class ValidatorObject<T extends object> extends Validator<T>
     return 0;
   }
 
-  public props (props: ValidatorMap<T>): this
+  public props<P extends object = {}>(props: ValidatorMap<P>): ValidatorObject<P>
   {
-    return this.validate(async function (value, next, done, fail) 
+    return this.validate<P>(async function (value, next, done, fail, path, addItem) 
     {
-      const result: ResultObject<T> = {};
+      const result: ResultObject<P> = {};
       let valid = true;
 
       for (let prop in props) 
@@ -67,7 +67,7 @@ export class ValidatorObject<T extends object> extends Validator<T>
           continue;
         }
 
-        const [pass, updatedValue, failResult] = await validator.runAsTuple(value[prop]);
+        const [pass, updatedValue, failResult, items] = await validator.runAsTuple(value[prop], path.concat([prop]));
 
         if (pass)
         {
@@ -82,6 +82,8 @@ export class ValidatorObject<T extends object> extends Validator<T>
         }
         else
         {
+          items.forEach(addItem);
+
           result[prop] = failResult;
           valid = false;
         }
@@ -93,9 +95,9 @@ export class ValidatorObject<T extends object> extends Validator<T>
       } 
       else 
       {
-        fail(result as ResultFor<T>);
+        fail(result as ResultFor<P>, path);
       }
-    });
+    }) as any;
   }
 
   public instanceOf (type: new (...args: any[]) => T): this

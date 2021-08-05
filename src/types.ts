@@ -1,12 +1,12 @@
 
 
-export type Check<T> = (value: T, next: Next<T>, done: Done<T>, fail: Fail<T>) => Promise<void>;
+export type Check<T> = (value: T, next: Next<T>, done: Done<T>, fail: Fail<T>, path: (string | number)[], addItem: (item: Item) => void) => Promise<void>;
 
 export type Next<T> = (value: T) => Promise<void>;
 
 export type Done<T> = (value: T) => void;
 
-export type Fail<T> = (result: ResultFor<T>) => void;
+export type Fail<T> = (result: ResultFor<T>, path: (string | number)[]) => void;
 
 export type GetMessage<T> = (value: T) => ResultFor<T>;
 
@@ -14,7 +14,9 @@ export type Comparator<T> = (a: T, b: T) => number;
 
 export type Value<T> = T | (() => T);
 
-export type Tuple<T> = [boolean, T | undefined, ResultFor<T> | undefined];
+export type Tuple<T> = [boolean, T | undefined, ResultFor<T> | undefined, Item[] ];
+
+export type Item = { path: (string | number)[], message: string, value?: any };
 
 /**
  * Typescript doesn't allow circular references at the moment,

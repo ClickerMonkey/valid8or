@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { int, float, obj, arr, str, bool, geo, any } from '../src';
+import { obj, arr, str, geo } from '../src';
 
 
 
@@ -29,7 +29,8 @@ describe('Array', () =>
           coordinates: [2, 1]
         }
       }, 
-      undefined
+      undefined,
+      []
     ]);
 
 

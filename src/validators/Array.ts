@@ -4,7 +4,7 @@ import { toArray, isEmpty, resolve } from '../functions';
 import { Comparator, Value } from '../types';
 
 
-export function arr<T = any> (): ValidatorArray<T>
+export function arr<T = unknown> (): ValidatorArray<T>
 {
   return new ValidatorArray<T>(async (value, next) => next(value));
 }
@@ -76,22 +76,24 @@ export class ValidatorArray<T> extends Validator<T[]>
     }
   }
 
-  public type (type: Validator<T>, removeAndIgnoreInvalid: boolean = false): this
+  public type<E> (type: Validator<E>, removeAndIgnoreInvalid: boolean = false): ValidatorArray<E>
   {
-    return this.types([type], false, removeAndIgnoreInvalid);
+    return this.types<E>([type], false, removeAndIgnoreInvalid);
   }
 
-  public types (types: Validator<T>[], requireDivisibleAmount: boolean = true, removeAndIgnoreInvalid: boolean = false): this
+  public types<E> (types: Validator<E>[], requireDivisibleAmount: boolean = true, removeAndIgnoreInvalid: boolean = false): ValidatorArray<E>
   {
     type V = this;
 
-    return this.validate(async function (this: V, value, next, done, fail) 
+    return this.validate<E[]>(async function (this: ValidatorArray<E>, value, next, done, fail, path, addItem) 
     {
       this.typeValidator = types.length === 1 ? types[0] : undefined;
 
       if (requireDivisibleAmount && value.length % types.length !== 0)
       {
-        return fail(this.getMessage(value));
+        this.triggerFail(value, path, fail, addItem);
+
+        return;
       }
 
       const result: any[] = [];
@@ -101,7 +103,7 @@ export class ValidatorArray<T> extends Validator<T[]>
 
       for (let i = 0; i < value.length; i++) 
       {
-        const [pass, updatedValue, failResult] = await types[i % types.length].runAsTuple(value[i]);
+        const [pass, updatedValue, failResult, items] = await types[i % types.length].runAsTuple(value[i], path.concat([i]));
 
         if (pass) 
         {
@@ -109,6 +111,8 @@ export class ValidatorArray<T> extends Validator<T[]>
         } 
         else 
         {
+          items.forEach(addItem);
+
           if (removeAndIgnoreInvalid) 
           {
             removing.push(i);
@@ -135,9 +139,9 @@ export class ValidatorArray<T> extends Validator<T[]>
       } 
       else 
       {
-        fail(result);
+        fail(result, path);
       }
-    });
+    }) as any;
   }
 
   public minLength (min: Value<number>): this

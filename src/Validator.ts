@@ -1,5 +1,5 @@
 
-import { Check, GetMessage, Comparator, Value, Next, Done, Fail, Tuple, ResultFor } from './types';
+import { Check, GetMessage, Comparator, Value, Next, Done, Fail, Tuple, ResultFor, Item } from './types';
 import { isGetMessage, resolve, isEmpty, isString } from './functions';
 
 
@@ -30,6 +30,14 @@ export abstract class Validator<T>
     return new (<any>this.constructor)((value: T, next: Next<T>) => next(value));
   }
 
+  protected triggerFail(value: any, path: (string | number)[], fail: Fail<any>, addItem: (item: Item) => void): void
+  {
+    const message = this.getMessage(value);
+
+    addItem({ value, path, message: message as any });
+    fail(message, path);
+  }
+
   public message (getMessage: GetMessage<T> | string): this
   {
     this.getMessage = isGetMessage<T>(getMessage) 
@@ -51,7 +59,7 @@ export abstract class Validator<T>
     return this;
   }
 
-  public validate (check: Check<T>): this
+  public validate<VT = T> (check: Check<VT>): this
   {
     return new (<any>this.constructor)(check, this);
   }
@@ -69,7 +77,7 @@ export abstract class Validator<T>
   {
     type V = this;
 
-    return this.validate(async function (this: V, value, next, done, fail) 
+    return this.validate(async function (this: V, value, next, done, fail, path, addItem) 
     {
       const parsed = this.parse(value);
 
@@ -83,7 +91,7 @@ export abstract class Validator<T>
           } 
           else 
           {
-            fail(this.getMessage(value));
+            this.triggerFail(value, path, fail, addItem);
           }
         } 
         else 
@@ -119,11 +127,11 @@ export abstract class Validator<T>
   {
     type V = this;
 
-    return this.validate(async function (this: V, value, next, done, fail) 
+    return this.validate(async function (this: V, value, next, done, fail, path, addItem) 
     {
       if (!(await check(value))) 
       {
-        fail(this.getMessage(value));
+        this.triggerFail(value, path, fail, addItem);
       } 
       else 
       {
@@ -188,9 +196,9 @@ export abstract class Validator<T>
   {
     type V = this;
 
-    return this.validate(async function (this: V, value, next, done, fail) 
+    return this.validate(async function (this: V, value, next, done, fail, path, addItem) 
     {
-      fail(this.getMessage(value));
+      this.triggerFail(value, path, fail, addItem);
     });
   }
 
@@ -198,14 +206,14 @@ export abstract class Validator<T>
   {
     type V = this;
 
-    return this.validate(async function (this: V, value, next, done, fail) 
+    return this.validate(async function (this: V, value, next, done, fail, path, addItem) 
     {
       const root = this.newInstance();
       const many = getMany(root);
 
       for (let i = 0; i < many.length; i++) 
       {
-        const [pass, updatedValue, failReason] = await many[i].runAsTuple(value);
+        const [pass, updatedValue] = await many[i].runAsTuple(value, path);
 
         if (pass && updatedValue !== undefined)
         {
@@ -213,7 +221,7 @@ export abstract class Validator<T>
         }
       }
 
-      fail(this.getMessage(value));
+      this.triggerFail(value, path, fail, addItem);
     });
   }
 
@@ -234,12 +242,12 @@ export abstract class Validator<T>
 
   public nullify (): this
   {
-    return this.transform(value => null);
+    return this.transform(value => null) as any;
   }
 
   public remove (): this
   {
-    return this.transform(value => undefined);
+    return this.transform(value => undefined) as any;
   }
 
   public set (newValue: Value<T>): this
@@ -267,23 +275,24 @@ export abstract class Validator<T>
     return this.transform(value => isString(value) ? decodeURIComponent(value) : value);
   }
 
-  public async run (value: any, next: Next<T>, done: Done<T>, fail: Fail<T>): Promise<void>
+  public async run (value: any, next: Next<T>, done: Done<T>, fail: Fail<T>, path: (string | number)[] = [], addItem: (item: Item) => void): Promise<void>
   {
     if (this.parent) 
     {
-      await this.parent.run(value, (newValue) => this.check(newValue, next, done, fail), done, fail);
+      await this.parent.run(value, (newValue) => this.check(newValue, next, done, fail, path, addItem), done, fail, path, addItem);
     }
     else
     {
-      await this.check(value, next, done, fail);
+      await this.check(value, next, done, fail, path, addItem);
     }
   }
 
-  public async runAsTuple (value: any): Promise<Tuple<T>>
+  public async runAsTuple (value: any, path: (string | number)[] = []): Promise<Tuple<T>>
   {
     let pass = true;
     let updated: T | undefined = undefined;
     let result: ResultFor<T> | undefined = undefined;
+    const items: Item[] = [];
 
     await this.run(value, 
       async (nextValue)  => {
@@ -295,17 +304,32 @@ export abstract class Validator<T>
       (failResult) => {
         result = failResult;
         pass = false;
-      }
+      },
+      path,
+      (item) => {
+        items.push(item);
+        pass = false;
+      },
     );
 
-    return [pass, updated, result];
+    return [pass, updated, result, items];
   }
 
   public async runAsPromise (value: any): Promise<T>
   {
     return new Promise<T>((resolve, reject) => 
     {
-      this.run(value, async(value) => resolve(value), resolve, reject);
+      this.run(value, async(value) => resolve(value), resolve, reject, [], () => {});
+    });
+  }
+
+  public async runAsPromiseItems (value: any): Promise<T>
+  {
+    return new Promise<T>((resolve, reject) => 
+    {
+      const items: Item[] = [];
+
+      this.run(value, async(value) => resolve(value), resolve, () => reject(items), [], (item) => items.push(item));
     });
   }
   

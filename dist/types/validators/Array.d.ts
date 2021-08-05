@@ -1,6 +1,6 @@
 import { Validator } from '../Validator';
 import { Comparator, Value } from '../types';
-export declare function arr<T = any>(): ValidatorArray<T>;
+export declare function arr<T = unknown>(): ValidatorArray<T>;
 export declare class ValidatorArray<T> extends Validator<T[]> {
     private typeValidator?;
     protected parse(value: any): any;
@@ -8,8 +8,8 @@ export declare class ValidatorArray<T> extends Validator<T[]> {
     protected getComparator(a: T[], b: T[]): number;
     getTypeValidator(): Validator<T> | undefined;
     getTypeComparator(): Comparator<T> | undefined;
-    type(type: Validator<T>, removeAndIgnoreInvalid?: boolean): this;
-    types(types: Validator<T>[], requireDivisibleAmount?: boolean, removeAndIgnoreInvalid?: boolean): this;
+    type<E>(type: Validator<E>, removeAndIgnoreInvalid?: boolean): ValidatorArray<E>;
+    types<E>(types: Validator<E>[], requireDivisibleAmount?: boolean, removeAndIgnoreInvalid?: boolean): ValidatorArray<E>;
     minLength(min: Value<number>): this;
     maxLength(max: Value<number>): this;
     every(every: (item: T, index: number, all: T[]) => boolean): this;

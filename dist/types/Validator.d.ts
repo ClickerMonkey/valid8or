@@ -1,4 +1,4 @@
-import { Check, GetMessage, Comparator, Value, Next, Done, Fail, Tuple } from './types';
+import { Check, GetMessage, Comparator, Value, Next, Done, Fail, Tuple, Item } from './types';
 export declare abstract class Validator<T> {
     parent?: this;
     check: Check<T>;
@@ -9,10 +9,11 @@ export declare abstract class Validator<T> {
     protected abstract parse(value: any): any;
     protected abstract isValid(parsed: any, value: any): parsed is T;
     protected newInstance(): this;
+    protected triggerFail(value: any, path: (string | number)[], fail: Fail<any>, addItem: (item: Item) => void): void;
     message(getMessage: GetMessage<T> | string): this;
     withComparator(comparator: Comparator<T>): this;
     reverseComparator(): this;
-    validate(check: Check<T>): this;
+    validate<VT = T>(check: Check<VT>): this;
     transform<R, V extends Validator<R>>(transformer: (value: T) => R | Promise<R>): V;
     eval(required: Value<boolean>, defaults?: Value<T>): this;
     required(defaults?: Value<T>): this;
@@ -38,7 +39,8 @@ export declare abstract class Validator<T> {
     encodeComponent(): this;
     decode(): this;
     decodeComponent(): this;
-    run(value: any, next: Next<T>, done: Done<T>, fail: Fail<T>): Promise<void>;
-    runAsTuple(value: any): Promise<Tuple<T>>;
+    run(value: any, next: Next<T>, done: Done<T>, fail: Fail<T>, path: (string | number)[] | undefined, addItem: (item: Item) => void): Promise<void>;
+    runAsTuple(value: any, path?: (string | number)[]): Promise<Tuple<T>>;
     runAsPromise(value: any): Promise<T>;
+    runAsPromiseItems(value: any): Promise<T>;
 }
