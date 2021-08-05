@@ -30,7 +30,7 @@ const validValue = [
   { id: ' abef ', admin: '1' }
 ]
 
-const [pass, result, fail] = await arrayValidator.runAsTuple(validValue);
+const [pass, result, fail, items] = await arrayValidator.runAsTuple(validValue);
 
 /*
 pass = true
@@ -39,6 +39,7 @@ result = [
   { id: 'abcd', admin: true },
   { id: 'abef', admin: true }]
 fail = undefined
+items = []
 */
 
 const invalidValue = [
@@ -47,7 +48,7 @@ const invalidValue = [
   { id: 'rte' }
 ];
 
-const [pass, result, fail] = await arrayValidator.runAsTuple(invalidValue);
+const [pass, result, fail, items] = await arrayValidator.runAsTuple(invalidValue);
 
 /*
 pass = false
@@ -56,6 +57,12 @@ fail = [
   { id: 'alpha', age: 'greaterThan', admin: 'required' },
   'required',
   undefined // passed validation, not a failure
+]
+items = [
+  { path: [0, 'id'], message: 'alpha', value: 45 },
+  { path: [0, 'age'], message: 'greaterThan', value: -45 },
+  { path: [0, 'admin'], message: 'required', value: 'WHAT' },
+  { path: [1], message: 'required', value: null }
 ]
 */
 
