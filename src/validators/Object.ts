@@ -1,7 +1,7 @@
 
 import { Validator } from '../Validator';
 import { isPlainObject } from '../functions';
-import { ResultObject, ResultFor } from '../types';
+import { ResultObject, ResultFor, MergeObjects, GetMessage, Check } from '../types';
 
 
 export type ValidatorMap<T> = 
@@ -16,6 +16,18 @@ export function obj<T extends object = {}> (): ValidatorObject<T>
 
 export class ValidatorObject<T extends object> extends Validator<T>
 {
+
+  public properties?: ValidatorMap<T>;
+
+  public constructor (check: Check<T>, parent?: Validator<T>, getMessage?: GetMessage<T>)
+  {
+    super(check, parent, getMessage);
+
+    if (parent instanceof ValidatorObject && parent.properties)
+    {
+      this.properties = { ...(parent as ValidatorObject<T>).properties };
+    }
+  }
   
   protected parse (value: any): any
   {
@@ -51,10 +63,21 @@ export class ValidatorObject<T extends object> extends Validator<T>
     return 0;
   }
 
-  public props<P extends object = {}>(props: ValidatorMap<P>): ValidatorObject<P>
+  public add<P extends object = {}>(additionalProps: ValidatorMap<P>): ValidatorObject<MergeObjects<T, P>>
   {
-    return this.validate<P>(async function (value, next, done, fail, path, addItem) 
+    const props = { 
+      ...this.properties,
+      ...additionalProps,
+    };
+
+    return this.props(props) as any;
+  }
+
+  public props<P extends object = {}>(overrideProps: ValidatorMap<P>): ValidatorObject<P>
+  {
+    const validator = this.validate<P>(async function (this: ValidatorObject<P>, value, next, done, fail, path, addItem) 
     {
+      const props = this.properties;
       const result: ResultObject<P> = {};
       let valid = true;
 
@@ -98,6 +121,10 @@ export class ValidatorObject<T extends object> extends Validator<T>
         fail(result as ResultFor<P>, path);
       }
     }) as any;
+
+    validator.properties = overrideProps;
+
+    return validator;
   }
 
   public instanceOf (type: new (...args: any[]) => T): this

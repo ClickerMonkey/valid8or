@@ -20,3 +20,8 @@ export declare type ResultFor<A> = A extends [infer B] ? (B extends [infer C] ? 
 export declare type ResultObject<T> = Result | {
     [K in keyof T]?: ResultFor<T[K]>;
 };
+export declare type MergeObjects<A, B> = {
+    [K in keyof B]: undefined extends B[K] ? K extends keyof A ? Exclude<B[K], undefined> | A[K] : B[K] : B[K];
+} & {
+    [K in keyof A]: K extends keyof B ? undefined extends B[K] ? Exclude<B[K], undefined> | A[K] : B[K] : A[K];
+};

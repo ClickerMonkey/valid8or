@@ -34,3 +34,18 @@ export type ResultFor<A> =
 
 export type ResultObject<T> = Result | { [K in keyof T]?: ResultFor<T[K]> };
 
+// Returns the result of { ...A, ...B }
+export type MergeObjects<A, B> = {
+  [K in keyof B]: undefined extends B[K]
+    ? K extends keyof A
+      ? Exclude<B[K], undefined> | A[K]
+      : B[K]
+    : B[K]
+} & {
+  [K in keyof A]: K extends keyof B
+    ? undefined extends B[K]
+      ? Exclude<B[K], undefined> | A[K]
+      : B[K]
+    : A[K]
+};
+

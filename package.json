@@ -1,6 +1,6 @@
 {
   "name": "valid8or",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "author": "Philip Diffenderfer",
   "description": "A validator and transformer in TypeScript/JS for simple and complex data types",
   "license": "MIT",
