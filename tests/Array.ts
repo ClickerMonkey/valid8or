@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { obj, arr, str, geo } from '../src';
+import { obj, arr, str, geo, int, bool } from '../src';
 
 
 
@@ -34,6 +34,15 @@ describe('Array', () =>
     ]);
 
 
+  });
+
+  it('tuple', () => 
+  {
+    arr().types<[number, 'a' | 'b', boolean]>([
+      int(),
+      str<'a' | 'b'>(),
+      bool()
+    ]);
   });
 
 });

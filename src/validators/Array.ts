@@ -1,30 +1,40 @@
 
 import { Validator } from '../Validator';
 import { toArray, isEmpty, resolve } from '../functions';
-import { Comparator, Value } from '../types';
+import { Comparator, Value, ResultFor, Check } from '../types';
+import { ValidatorBoolean } from './Boolean';
+import { ValidatorNumber } from './Number';
 
 
-export function arr<T = unknown> (): ValidatorArray<T>
+export function arr<T extends any[] = unknown[]> (): ValidatorArray<T>
 {
   return new ValidatorArray<T>(async (value, next) => next(value));
 }
 
-export class ValidatorArray<T> extends Validator<T[]>
+export type ValidatorTupleTypes<T extends any[]> = {
+  [I in keyof T]: T[I] extends { check: Check<infer R> } ? R : unknown
+};
+
+export type ValidatorForTypes<T extends Validator<any>[]> = {
+  [I in keyof T]: Validator<T[I]>
+};
+
+export class ValidatorArray<T extends any[]> extends Validator<T>
 {
 
-  private typeValidator?: Validator<T>;
+  private typeValidators?: Validator<T[number]>[];
 
   protected parse (value: any): any
   {
     return isEmpty(value) ? value : toArray(value);
   }
 
-  protected isValid (parsed: any, value: any): parsed is T[]
+  protected isValid (parsed: any, value: any): parsed is T
   {
     return Array.isArray(parsed);
   }
 
-  protected getComparator (a: T[], b: T[]): number
+  protected getComparator (a: T, b: T): number
   { 
     const d = a.length - b.length;
 
@@ -33,15 +43,15 @@ export class ValidatorArray<T> extends Validator<T[]>
       return d;
     }
     
-    const comparator = this.getTypeComparator();
-
-    if (!comparator) 
-    { 
-      throw 'Cannot compare arrays before a type with a comparator is specified';
-    }
-
     for (let i = 0; i < a.length; i++) 
     {
+      const comparator = this.getTypeComparator(i);
+
+      if (!comparator) 
+      { 
+        throw 'Cannot compare arrays before a type with a comparator is specified';
+      }
+
       const r = comparator(a[i], b[i]);
 
       if (r !== 0) 
@@ -53,22 +63,22 @@ export class ValidatorArray<T> extends Validator<T[]>
     return 0;
   }
 
-  public getTypeValidator (): Validator<T> | undefined
+  public getTypeValidator (element: number): Validator<T> | undefined
   {
-    if (this.typeValidator) 
+    if (this.typeValidators) 
     {
-      return this.typeValidator;
+      return this.typeValidators[element % this.typeValidators.length];
     }
 
     if (this.parent && this.parent.getTypeValidator) 
     {
-      return this.parent.getTypeValidator();
+      return this.parent.getTypeValidator(element);
     }
   }
 
-  public getTypeComparator (): Comparator<T> | undefined
+  public getTypeComparator (element: number): Comparator<T> | undefined
   {
-    const validator = this.getTypeValidator();
+    const validator = this.getTypeValidator(element);
 
     if (validator) 
     {
@@ -76,18 +86,16 @@ export class ValidatorArray<T> extends Validator<T[]>
     }
   }
 
-  public type<E> (type: Validator<E>, removeAndIgnoreInvalid: boolean = false): ValidatorArray<E>
+  public type<E> (type: Validator<E>, removeAndIgnoreInvalid: boolean = false): ValidatorArray<E[]>
   {
-    return this.types<E>([type], false, removeAndIgnoreInvalid);
+    return this.types([type], false, removeAndIgnoreInvalid) as any as ValidatorArray<E[]>;
   }
 
-  public types<E> (types: Validator<E>[], requireDivisibleAmount: boolean = true, removeAndIgnoreInvalid: boolean = false): ValidatorArray<E>
+  public types<E extends any[]> (types: ValidatorForTypes<E>, requireDivisibleAmount: boolean = true, removeAndIgnoreInvalid: boolean = false): ValidatorArray<E>
   {
-    type V = this;
-
-    return this.validate<E[]>(async function (this: ValidatorArray<E>, value, next, done, fail, path, addItem) 
+    return this.validate<E>(async function (this: ValidatorArray<E>, value, next, done, fail, path, addItem) 
     {
-      this.typeValidator = types.length === 1 ? types[0] : undefined;
+      this.typeValidators = types;
 
       if (requireDivisibleAmount && value.length % types.length !== 0)
       {
@@ -97,7 +105,7 @@ export class ValidatorArray<T> extends Validator<T[]>
       }
 
       const result: any[] = [];
-      const newValue: any[] = value.slice();
+      const newValue = value.slice() as E;
       let removing: number[] = [];
       let valid: boolean = true;
 
@@ -139,7 +147,7 @@ export class ValidatorArray<T> extends Validator<T[]>
       } 
       else 
       {
-        fail(result, path);
+        fail(result as ResultFor<E>, path);
       }
     }) as any;
   }
@@ -182,16 +190,16 @@ export class ValidatorArray<T> extends Validator<T[]>
     {
       if (!sorter)
       {
-        sorter = this.getTypeComparator();
+        sorter = this.getTypeComparator(0);
       }
 
       return value.slice().sort(sorter)
     });
   }
 
-  public map<M> (mapper: (item: T) => M): ValidatorArray<M>
+  public map<M> (mapper: (item: T[number]) => M): ValidatorArray<M[]>
   {
-    return this.transform<M[], ValidatorArray<M>>(value => value.map(mapper));
+    return this.transform<M[], ValidatorArray<M[]>>(value => value.map(mapper));
   }
 
   public unique (comparator?: Comparator<T>): this
@@ -200,7 +208,7 @@ export class ValidatorArray<T> extends Validator<T[]>
 
     return this.is(function(this: V, value) 
     {
-      if (!comparator && !(comparator = this.getTypeComparator())) 
+      if (!comparator && !(comparator = this.getTypeComparator(0))) 
       {
         throw 'Cannot ensure unique values when a type or comparator has not been specified';
       }
@@ -227,7 +235,7 @@ export class ValidatorArray<T> extends Validator<T[]>
 
     return this.transform(function (this: V, value) 
     {
-      if (!comparator && !(comparator = this.getTypeComparator())) 
+      if (!comparator && !(comparator = this.getTypeComparator(0))) 
       {
         throw 'Cannot remove duplicate values when a type or comparator has not been specified';
       }
