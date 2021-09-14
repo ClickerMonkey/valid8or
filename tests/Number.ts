@@ -13,6 +13,10 @@ describe('valid8', () =>
     const a = obj().required().props({
       limit: int().required(0).min(0)
     });
+
+    const aNoDefault = obj().required().props({
+      limit: int().required().min(0)
+    });
     
     expect(await a.runAsTuple({
       limit: '34'
@@ -26,30 +30,42 @@ describe('valid8', () =>
       [ false, undefined, { limit: 'min' }, [{ path: ['limit'], message: 'min', value: -10 }] ]
     );
   
-    expect(await a.runAsTuple({
+    expect(await aNoDefault.runAsTuple({
       limit: null,
     })).to.deep.equal(
       [ false, undefined, { limit: 'required' }, [{ path: ['limit'], message: 'required', value: null }] ]
     );
+
+    expect(await a.runAsTuple({
+      limit: null,
+    })).to.deep.equal(
+      [ true, { limit: 0 }, undefined, [] ]
+    );
   
     expect(await a.runAsTuple({
+  
+    })).to.deep.equal(
+      [ true, { limit: 0 }, undefined, [] ]
+    );
+  
+    expect(await aNoDefault.runAsTuple({
   
     })).to.deep.equal(
       [ false, undefined, { limit: 'required' }, [{ path: ['limit'], message: 'required', value: undefined }] ]
     );
   
     const b = arr()
-      .required(() => [])
+      .required()
       .maxLength(4)
       .type(obj().required().props({
         id: str().required().trim().uuid(),
         age: int().optional().greaterThan(0),
-        admin: bool().required(false)
+        admin: bool().required()
       }))
     ;
   
     expect(await b.runAsTuple(undefined)).to.deep.equal(
-      [ false, undefined, [ 'required' ], [{ path: [0], message: 'required', value: undefined }] ]
+      [ false, undefined, 'required', [{ path: [], message: 'required', value: undefined }] ]
     );
   
     expect(await b.runAsTuple([

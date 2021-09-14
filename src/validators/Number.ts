@@ -1,6 +1,6 @@
 
 import { Validator } from '../Validator'
-import { trimIfString } from '../functions';
+import { trimIfString, isEmpty } from '../functions';
 
 
 export function int<N extends number = number>(): ValidatorNumber<N>
@@ -20,12 +20,12 @@ export class ValidatorNumber<N extends number = number> extends Validator<N>
 
   protected parse (value: any): any
   {
-    return this.parser(trimIfString(value));
+    return isEmpty(value) ? value : this.parser(trimIfString(value));
   }
 
   protected isValid (parsed: any, value: any): parsed is N
   {
-    return isFinite(parsed);
+    return typeof parsed === 'number' && isFinite(parsed);
   }
 
   protected getComparator (a: number, b: number): number

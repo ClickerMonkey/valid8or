@@ -26,7 +26,7 @@ export function isEmpty (x: any): boolean
 {
   return isString(x) 
     ? x.trim().length === 0 
-    : (x !== undefined && x !== null);
+    : (x === undefined || x === null);
 }
 
 export function isPlainObject (x: any): boolean

@@ -2,8 +2,6 @@
 import { Validator } from '../Validator';
 import { toArray, isEmpty, resolve } from '../functions';
 import { Comparator, Value, ResultFor, Check } from '../types';
-import { ValidatorBoolean } from './Boolean';
-import { ValidatorNumber } from './Number';
 
 
 export function arr<T extends any[] = unknown[]> (): ValidatorArray<T>

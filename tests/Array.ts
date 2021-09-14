@@ -45,4 +45,12 @@ describe('Array', () =>
     ]);
   });
 
+  it('optional array', async () => 
+  {
+    const v = arr().optional().type(str());
+    const result = await v.runAsTuple(undefined);
+
+    expect(result).to.deep.equal([ true, undefined, undefined, []]);
+  });
+
 });
