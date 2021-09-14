@@ -181,5 +181,27 @@ describe('valid8', () =>
     expect(await a.runAsPromise([8, '2', 3, 6, '3', 4])).to.deep.equal(
       [2, 3, 4, 6, 8]
     );
-  })
+  });
+
+  it('hobwe', async () => {
+    const ValidateTestRequest = obj().required(() => ({})).props({
+      location      : str().optional(),
+      interests     : arr().optional().type(str().required()),
+      query         : str().optional(),
+      queryResult   : any(),
+      types         : arr().optional().type(int().required()),
+      interestLimit : int().optional(),
+      groupLimit    : int().optional(),
+      eventLimit    : int().optional(),
+    });
+
+    const r0 = await ValidateTestRequest.runAsTuple(undefined);
+
+    expect(r0).to.deep.equal([true, {}, undefined, []]);
+
+    const r1 = await ValidateTestRequest.runAsTuple({});
+
+    expect(r1).to.deep.equal([true, {}, undefined, []]);
+  });
+
 })
